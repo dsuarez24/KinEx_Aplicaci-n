@@ -1,1 +1,0 @@
-# KinEx_Aplicaci-n
