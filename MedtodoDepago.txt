@@ -1,0 +1,52 @@
+package modelo;
+
+import config.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MetodoDePagoDAO {
+    
+    Conexion cn = new Conexion();
+    Connection con;
+    PreparedStatement ps;
+    ResultSet rs;
+    int resp;
+
+    public List listar(){
+    String sql = "slect * from MetodoDePago";
+    List<MetodoDePago> listarMetodoDePago = new ArrayList<>();
+    try{
+        con = cn.Conexion();
+        ps = con.prepareStatement(sql);
+        rs = ps.executeQuery();
+        while(rs.next()){
+            MetodoDePago mdp = new MetodoDePago();
+            mdp.setCodigoMetodoDePago(rs.getInt(1));
+            mdp.setDescripcion(rs.getString(2));
+            listarMetodoDePago.add(mdp);
+        }
+    
+    }catch(Exception e){
+    System.out.println("hola nop se pudo");
+    e.printStackTrace();
+    }
+    return listarMetodoDePago;
+    }
+    
+    public int agregar(MetodoDePago mdp){
+        String sql = "insert into MetodoDePago (descripcion) values(?)";
+        try{
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, mdp.getDescripcion());
+            ps.executeUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return resp;
+    }
+    
+}
