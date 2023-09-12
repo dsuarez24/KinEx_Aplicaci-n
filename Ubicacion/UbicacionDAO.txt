@@ -1,0 +1,151 @@
+package modelo;
+
+
+import config.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+ 
+
+import config.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+public class UbicacionDAO {
+
+    Conexion cn = new Conexion();
+    Connection con;
+    PreparedStatement ps;
+    ResultSet rs;
+    
+    int resp; 
+
+    // Metodo Listar
+    public List<Ubicacion> listar(){
+        
+        String sql = "SELECT * FROM Ubicacion";
+        List<Ubicacion> listaUbicacion = new ArrayList<>();
+        
+        try{
+        
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                Ubicacion ubicacion = new Ubicacion();
+                
+                ubicacion.setCodigoUbicacion(rs.getInt("codigoUbicacion"));
+                ubicacion.setCodigoTipoUbicacion(rs.getInt("codigoTipoUbicacion"));
+                ubicacion.setDepartamento(rs.getString("departamento"));
+                ubicacion.setMunicipio(rs.getString("municipio"));
+                ubicacion.setAldeaColonia(rs.getString("aldeaColonia"));
+            
+                listaUbicacion.add(ubicacion);
+            }
+        
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        return listaUbicacion;
+    }
+    
+    // Metodo Agregar
+    public int agregar(Ubicacion ubicacion){
+ 
+        String sql = "INSERT INTO Ubicacion (codigoTipoUbicacion, departamento, municipio, aldeaColonia) VALUES (?,?,?,?)";
+        
+        try{
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+                    
+            ps.setInt(1, ubicacion.getCodigoTipoUbicacion());
+            ps.setString(2, ubicacion.getDepartamento());
+            ps.setString(3, ubicacion.getMunicipio());
+            ps.setString(4, ubicacion.getAldeaColonia());
+                    
+            ps.executeUpdate();
+                    
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("No se pudo agregar el registro");
+        }
+                
+        return resp;
+    }
+    
+    // Buscar por codigo
+    public Ubicacion listarCodigoUbicacion(int codigoUbicacion){
+        
+        Ubicacion ubicacion = new Ubicacion();
+        String sql = "SELECT * FROM Ubicacion WHERE codigoUbicacion = ?";
+        
+        try{
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, codigoUbicacion);
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                ubicacion.setCodigoUbicacion(rs.getInt("codigoUbicacion"));
+                ubicacion.setCodigoTipoUbicacion(rs.getInt("codigoTipoUbicacion"));
+                ubicacion.setDepartamento(rs.getString("departamento"));
+                ubicacion.setMunicipio(rs.getString("municipio"));
+                ubicacion.setAldeaColonia(rs.getString("aldeaColonia"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return ubicacion;
+    }
+    
+    // Metodo Editar
+    public int actualizar(Ubicacion ubicacion){
+        
+        String sql = "UPDATE Ubicacion SET codigoTipoUbicacion = ?, departamento = ?, municipio = ?, aldeaColonia = ? WHERE codigoUbicacion = ?";
+        
+        try{
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            
+            ps.setInt(1, ubicacion.getCodigoTipoUbicacion());
+            ps.setString(2, ubicacion.getDepartamento());
+            ps.setString(3, ubicacion.getMunicipio());
+            ps.setString(4, ubicacion.getAldeaColonia());
+            ps.setInt(5, ubicacion.getCodigoUbicacion());
+            
+            ps.executeUpdate();
+            
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        return resp;
+    }
+    
+    // Metodo Eliminar
+    public void eliminar(int codigoUbicacion){
+        String sql = "DELETE FROM Ubicacion WHERE codigoUbicacion = ?";
+        
+        try{
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, codigoUbicacion);
+            ps.executeUpdate();
+        }
+        catch(Exception e){
+            e.printStackTrace();   
+        }
+    }
+}

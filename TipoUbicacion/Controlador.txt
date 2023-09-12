@@ -1,0 +1,41 @@
+
+        else if (menu.equals("TipoUbicacion")) {
+    switch (accion) {
+        case "listar":
+            List<TipoUbicacion> listaTipoUbicacion = tipoUbicacionDAO.listar();
+            request.setAttribute("tiposUbicacion", listaTipoUbicacion);
+            break;
+        case "Agregar":
+            String direccion = request.getParameter("txtDireccion");
+
+            TipoUbicacion tipoUbicacion = new TipoUbicacion();
+            tipoUbicacion.setDireccion(direccion);
+
+            tipoUbicacionDAO.agregar(tipoUbicacion);
+            request.getRequestDispatcher("Controlador?menu=TipoUbicacion&accion=listar").forward(request, response);
+            break;
+        case "Editar":
+            int codTipoUbicacion = Integer.parseInt(request.getParameter("codigoTipoUbicacion"));
+            TipoUbicacion tipoUbi = tipoUbicacionDAO.listarCodigoTipoUbicacion(codTipoUbicacion);
+            request.setAttribute("tipoUbicacion", tipoUbi);
+            request.getRequestDispatcher("Controlador?menu=TipoUbicacion&accion=listar").forward(request, response);
+            break;
+        case "Actualizar":
+            direccion = request.getParameter("txtDireccion");
+            codTipoUbicacion = Integer.parseInt(request.getParameter("codigoTipoUbicacion"));
+
+            TipoUbicacion tipoUbicacionUpdate = new TipoUbicacion();
+            tipoUbicacionUpdate.setDireccion(direccion);
+            tipoUbicacionUpdate.setCodigoTipoUbicacion(codTipoUbicacion);
+
+            tipoUbicacionDAO.actualizar(tipoUbicacionUpdate);
+            request.getRequestDispatcher("Controlador?menu=TipoUbicacion&accion=listar").forward(request, response);
+            break;
+        case "Eliminar":
+            int codTipoUbicacionEliminar = Integer.parseInt(request.getParameter("codigoTipoUbicacion"));
+            tipoUbicacionDAO.eliminar(codTipoUbicacionEliminar);
+            request.getRequestDispatcher("Controlador?menu=TipoUbicacion&accion=listar").forward(request, response);
+            break;
+    }
+    request.getRequestDispatcher("TipoUbicacion.jsp").forward(request, response);
+}

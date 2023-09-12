@@ -1,0 +1,52 @@
+else if (menu.equals("Ubicacion")) {
+    switch (accion) {
+        case "listar":
+            List<Ubicacion> listaUbicacion = ubicacionDAO.listar();
+            request.setAttribute("ubicaciones", listaUbicacion);
+            break;
+        case "Agregar":
+            int codigoTipoUbicacion = Integer.parseInt(request.getParameter("txtCodigoTipoUbicacion"));
+            String departamento = request.getParameter("txtDepartamento");
+            String municipio = request.getParameter("txtMunicipio");
+            String aldeaColonia = request.getParameter("txtAldeaColonia");
+            
+            Ubicacion ubicacion = new Ubicacion();
+            ubicacion.setCodigoTipoUbicacion(codigoTipoUbicacion);
+            ubicacion.setDepartamento(departamento);
+            ubicacion.setMunicipio(municipio);
+            ubicacion.setAldeaColonia(aldeaColonia);
+            
+            ubicacionDAO.agregar(ubicacion);
+            request.getRequestDispatcher("Controlador?menu=Ubicacion&accion=listar").forward(request, response);
+            break;
+        case "Editar":
+            int codUbicacion = Integer.parseInt(request.getParameter("codigoUbicacion"));
+            Ubicacion ubi = ubicacionDAO.listarCodigoUbicacion(codUbicacion);
+            request.setAttribute("ubicacion", ubi);
+            request.getRequestDispatcher("Controlador?menu=Ubicacion&accion=listar").forward(request, response);
+            break;
+        case "Actualizar":
+            codigoTipoUbicacion = Integer.parseInt(request.getParameter("txtCodigoTipoUbicacion"));
+            departamento = request.getParameter("txtDepartamento");
+            municipio = request.getParameter("txtMunicipio");
+            aldeaColonia = request.getParameter("txtAldeaColonia");
+            codUbicacion = Integer.parseInt(request.getParameter("codigoUbicacion"));
+            
+            Ubicacion ubicacionUpdate = new Ubicacion();
+            ubicacionUpdate.setCodigoTipoUbicacion(codigoTipoUbicacion);
+            ubicacionUpdate.setDepartamento(departamento);
+            ubicacionUpdate.setMunicipio(municipio);
+            ubicacionUpdate.setAldeaColonia(aldeaColonia);
+            ubicacionUpdate.setCodigoUbicacion(codUbicacion);
+            
+            ubicacionDAO.actualizar(ubicacionUpdate);
+            request.getRequestDispatcher("Controlador?menu=Ubicacion&accion=listar").forward(request, response);
+            break;
+        case "Eliminar":
+            int codUbicacionEliminar = Integer.parseInt(request.getParameter("codigoUbicacion"));
+            ubicacionDAO.eliminar(codUbicacionEliminar);
+            request.getRequestDispatcher("Controlador?menu=Ubicacion&accion=listar").forward(request, response);
+            break;
+    }
+    request.getRequestDispatcher("Ubicacion.jsp").forward(request, response);
+}
