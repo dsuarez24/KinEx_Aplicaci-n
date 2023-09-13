@@ -7,53 +7,115 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!DOCTYPE html>
-<!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>TipoUbicacion</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-</head>
-<body>
-    <div class="d-flex">
-        <div class ="card col-sm-4">
-            <div class="card-body">
-                <form action="Controlador?menu=TipoUbicacion" method="POST">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>TipoUbicacion</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-                    <div class="form-group">
-                        <label>Direccion:</label>
-                        <input type="text" value="${tipoUbicacion.getDireccion()}" name="txtDireccion" class="form-control">
-                    </div>
-                    <br>
-                    <input type="submit" name="accion" value="Agregar" class="btn btn-info">
-                    <input type="submit" name="accion" value="Actualizar" class="btn btn-success">
-                </form>
-            </div>
-        </div> 
-        <div class="col-sm-8">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <td>CODIGO TIPO UBICACION</td>
-                        <td>DIRECCION</td>
-                        <td>ACCIONES</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="tipoUbicacion" items="${tiposUbicacion}">
-                        <tr>    
-                            <td>${tipoUbicacion.getCodigoTipoUbicacion()}</td>
-                            <td>${tipoUbicacion.getDireccion()}</td>
-                            <td>
-                                <a class="btn btn-warning" href="Controlador?menu=TipoUbicacion&accion=Editar&codigoTipoUbicacion=${tipoUbicacion.getCodigoTipoUbicacion()}">Editar</a>
-                                <a class="btn btn-danger" href="Controlador?menu=TipoUbicacion&accion=Eliminar&codigoTipoUbicacion=${tipoUbicacion.getCodigoTipoUbicacion()}" onclick="return confirm('¿Está seguro que quiere eliminar el dato?')">Eliminar</a>
-                            </td>
+        <!-- Agrega la biblioteca de Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+        <!-- Establece el estilo del contenedor del mapa -->
+        <style>
+            /* Estilo opcional para el contenedor del mapa */
+            #map {
+                width: 100%;
+                height: 400px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="d-flex">
+            <div class ="card col-sm-4">
+                <div class="card-body">
+                    <form action="Controlador?menu=TipoUbicacion" method="POST">
+
+                        <div class="form-group">
+                            <label>Direccion:</label>
+                            <input type="text" id="direccionInput" name="txtDireccion" class="form-control">
+                        </div>
+
+                        <!-- Contenedor del mapa -->
+                        <div id="map"></div>
+
+                        <br>
+                        <input type="submit" name="accion" value="Agregar" class="btn btn-info">
+                        <input type="submit" name="accion" value="Actualizar" class="btn btn-success">
+                    </form>
+                </div>
+            </div> 
+            <div class="col-sm-8">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <td>CODIGO TIPO UBICACION</td>
+                            <td>DIRECCION</td>
+                            <td>ACCIONES</td>
                         </tr>
-                    </c:forEach>    
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="tipoUbicacion" items="${tiposUbicacion}">
+                            <tr>    
+                                <td>${tipoUbicacion.getCodigoTipoUbicacion()}</td>
+                                <td>${tipoUbicacion.getDireccion()}</td>
+                                <td>
+                                    <a class="btn btn-warning" href="Controlador?menu=TipoUbicacion&accion=Editar&codigoTipoUbicacion=${tipoUbicacion.getCodigoTipoUbicacion()}">Editar</a>
+                                    <a class="btn btn-danger" href="Controlador?menu=TipoUbicacion&accion=Eliminar&codigoTipoUbicacion=${tipoUbicacion.getCodigoTipoUbicacion()}" onclick="return confirm('¿Está seguro que quiere eliminar el dato?')">Eliminar</a>
+                                </td>
+                            </tr>
+                        </c:forEach>    
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-</body>
+
+        <script>
+            let map;
+            let marker; // Declarar una variable para el marcador
+            let direccionInput = document.getElementById('direccionInput'); // Obtener el campo de texto de dirección
+
+            // Inicializa el mapa
+            function initMap() {
+                // Coordenadas iniciales en la Ciudad de Guatemala
+                map = L.map('map').setView([14.634915, -90.506882], 12); // Coordenadas iniciales y nivel de zoom
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                // Agregar un marcador inicial en las coordenadas iniciales
+                marker = L.marker([14.634915, -90.506882]).addTo(map);
+
+                // Define un evento clic en el mapa para cambiar la ubicación del marcador y actualizar la dirección
+                map.on('click', onMapClick);
+            }
+
+            // Función para manejar el evento clic en el mapa
+            function onMapClick(e) {
+                // Elimina el marcador existente (si lo hay)
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                // Crea un nuevo marcador en la ubicación del clic
+                marker = L.marker(e.latlng).addTo(map);
+
+                // Actualiza el campo de texto de dirección con la dirección obtenida
+                // ...
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const address = data.display_name;
+                            direccionInput.value = address; // Actualiza el valor del campo de texto
+                        })
+                        .catch(error => {
+                            console.error('Error en la solicitud de geocodificación inversa:', error);
+                            direccionInput.value = 'No se pudo obtener la dirección.';
+                        });
+
+            }
+        </script>
+
+        <!-- Incluye Leaflet y llama a initMap cuando esté listo -->
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" onload="initMap()"></script>
+    </body>
 </html>
+
